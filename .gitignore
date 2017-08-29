@@ -1,0 +1,13 @@
+/venv
+/__pycache__
+/.vscode
+*.pyc
+*.egg-info
+.DS_Store
+/.idea
+/logs
+/data/extracted_data
+/data/raw_data
+/pstat
+/data
+/metastore_db
