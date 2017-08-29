@@ -8,9 +8,9 @@ Jonathan Poczatek
 
 import pandas as pd
 import requests
-import datafabric_settings as settings
 from bs4 import BeautifulSoup
-import requests
+
+import datafabric_settings as settings
 import xmltodict
 
 
