@@ -11,3 +11,4 @@
 /pstat
 /data
 /metastore_db
+/config/local_store.h5
