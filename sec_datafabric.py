@@ -12,7 +12,7 @@ import json
 # from xmljson import parker, Parker
 # from json import dumps
 
-# import pandas as pd
+import pandas as pd
 import requests
 import xmltodict
 # from bs4 import BeautifulSoup
@@ -41,8 +41,6 @@ def getDefaultFeedUrl(cik, start_index=0):
 # cik_xml = [{'CIK': cik, 'FEED': getDefaultFeedUrl(cik)} for cik in lines]
 
 # store.put('cik_xml', cik_xml)
-# xmldict = xmltodict.parse(xml, process_namespaces=True, namespaces=namespaces)
-# print(json.dumps(xmldict, indent=4))
 
 
 def get_cik_list():
@@ -64,7 +62,7 @@ def company_listing_dict(cik):
     Returns a fucking parsed dict
     """
     # Company Entry Dict Template
-    company_entry = {'entry': []}
+    company_entry = {'cik': cik, 'entries': []}
 
     # Generate XML Feed URL from CIK
     feed_url = getDefaultFeedUrl(cik)
@@ -82,7 +80,7 @@ def company_listing_dict(cik):
     company_entry['company-info'] = raw_dict.get('company-info')
     # Obtain Entries
     assert raw_dict.get('entry')
-    company_entry['entry'].extend(raw_dict.get('entry'))
+    company_entry['entries'].extend(raw_dict.get('entry'))
 
     page_next_url = get_next(raw_dict)
     while page_next_url:
@@ -95,111 +93,19 @@ def company_listing_dict(cik):
             resp.content, encoding="ISO-8859-1", process_namespaces=True, namespaces=NAMESPACES)['feed']
 
         assert raw_dict.get('entry')
-        company_entry['entry'].extend(raw_dict.get('entry'))
+        company_entry['entries'].extend(raw_dict.get('entry'))
 
         page_next_url = get_next(raw_dict)
 
     return company_entry
 
 
-# def parse_xml(feed_url, parsed_dict=None):
-#     """
-#     Download
-#     """
-#     resp = requests.get(feed_url)
-#     raw_dict = xmltodict.parse(
-#         resp.content, encoding="ISO-8859-1", process_namespaces=True, namespaces=namespaces)
-
-#     def flatten_links(xmldict):
-#         links = {}
-#         for x in xmldict['feed']['link']:
-#             links[x['@rel']] = {
-#                 'type': x['@type'],
-#                 'href': x['@href']
-#             }
-#         return links
-
-#     def get_next(xmldict):
-#         return [x['@href'] for x in xmldict['feed']['link'] if x['@rel'] == 'next']
-#         for x in xmldict['link']:
-#             if x['@rel'] == 'next']:
-#                 return x['@href']
-
-#     def get_next3(xmldict):
-#         for x in xmldict['link']:
-#             if x['@rel'] == 'next':
-#                 return x['@href']
-
-#     def get_filings(xmldict):
-#         return [x for x in xmldict['feed']['entry']]
-
-#     if get_next(raw_dict):
-#         links= []
-#     links.append(feed_url)
-#     resp= requests.get(feed_url)
-#     soup= BeautifulSoup(resp.content, 'xml')
-
-#     # if x['@rel'] == 'next':
-
-#     entries= soup.find_all('entry')
-#     page_next= soup.select('link[rel="next"]')
-#     entries= soup.find_all('entry')
-#     # print('Added [{}] entries'.format(len(entries)))
-
-#     if page_next:
-#         print('Page_Next')
-#         # return parse_xml()(page_next[0].get('href'), links)
-#     else:
-#         return links
-
-# def listings(CIK):
-#     """
-#     Params: Company CIK string
-#     Output:
-#     """
-#     def flatten_links(xmldict):
-#         links_dict={}
-#         for x in xmldict['feed']['link']:
-#             links_dict[x['@rel']]={
-#                 'type': x['@type'],
-#                 'href': x['@href']
-#             }
-#         return links_dict
-
-#     # Generate XML Feed URL from CIK
-#     feed_url = getDefaultFeedUrl(CIK)
-
-#     # Download Feed
-#     resp = requests.get(feed_url)
-
-#     # Parse XML to Dict
-#     raw_dict = xmltodict.parse(
-#         resp.content, encoding = "ISO-8859-1", process_namespaces = True, namespaces = namespaces)
-#     # ['author', 'company-info', 'entry', 'id', 'link', 'title', 'updated'
-#     # Parse out the company header and store
-#     # Parse out the entries and store in dict
-#     # Pagenation Links Logic
-#     # Parse pagenation links
-
-#     # links = flatten_links(raw_dict)
-#     # return links
-
-
-# def parse_feed(feed_url, links = None):
-#     if not links:
-#         links=[]
-#     links.append(feed_url)
-#     resp=requests.get(feed_url)
-#     soup=BeautifulSoup(resp.content, 'xml')
-#     entries=soup.find_all('entry')
-#     page_next=soup.select('link[rel="next"]')
-#     # entries = soup.find_all('entry')
-#     # print('Added [{}] entries'.format(len(entries)))
-#     if page_next:
-#         # print('Page_Next')
-#         return parse_feed(page_next[0].get('href'), links)
-#     else:
-#         return links
+def jsonify_company(company_entry):
+    entries = json.dumps(company_entry['entries'])
+    company = json.dumps(company_entry['company-info'])
+    return {'cik': company_entry['cik'],
+            'company-info': company,
+            'entries': entries}
 
 
 true_index = [12, 56, 140, 158, 167, 177, 183,
@@ -239,20 +145,33 @@ testciks = ['0001260507',
             ]
 
 
-def test_run(ciks=testciks):
+def test_run(cik_list, company_listings):
+    # ciks = get_cik_list()
+    # store = pd.HDFStore(LOCAL_HDF)
+    # company_listings = {}
+    for cik in cik_list:
+        print(f'processing  {cik}')
+        listing = company_listing_dict(cik)
+        company_listings[cik] = jsonify_company(listing)
+    return company_listings
+    # store.put('company_listings', company_listings)
 
-    # test = xmltodict.parse(requests.get(testfeeds[0]).content)
-    # len(test['feed']['entry'])
 
-    # from xml.etree.ElementTree import fromstring
-    # def flatten_links(xmldict):
-    #     links = {}
-    #     for x in xmldict['feed']['link']:
-    #         links[x['@rel']] = {
-    #             'type': x['@type'],
-    #             'href': x['@href']
-    #         }
-    #     return links
+store = pd.HDFStore(LOCAL_HDF)
+company_listings = {}
+test_run(testciks, company_listings)
+# test = xmltodict.parse(requests.get(testfeeds[0]).content)
+# len(test['feed']['entry'])
 
-    # 'http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001260507&type=&datea=&dateb=&owner=exclude&count=100&output=atom&start=100'
-    # xmldict['keys'] ['author', 'company-info', 'entry', 'id', 'link', 'title', 'updated']
+# from xml.etree.ElementTree import fromstring
+# def flatten_links(xmldict):
+#     links = {}
+#     for x in xmldict['feed']['link']:
+#         links[x['@rel']] = {
+#             'type': x['@type'],
+#             'href': x['@href']
+#         }
+#     return links
+
+# 'http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001260507&type=&datea=&dateb=&owner=exclude&count=100&output=atom&start=100'
+# xmldict['keys'] ['author', 'company-info', 'entry', 'id', 'link', 'title', 'updated']
