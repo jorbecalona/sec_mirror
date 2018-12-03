@@ -15,6 +15,9 @@ import json
 import pandas as pd
 import requests
 import xmltodict
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 # from bs4 import BeautifulSoup
 
 from datafabric_settings import *
@@ -160,6 +163,13 @@ def test_run(cik_list, company_listings):
 store = pd.HDFStore(LOCAL_HDF)
 company_listings = {}
 test_run(testciks, company_listings)
+
+
+engine = create_engine('postgresql://flaskapp:hunter2@localhost:5432/flaskapp')
+Session = sessionmaker(bind=engine)
+session = Session()
+
+
 # test = xmltodict.parse(requests.get(testfeeds[0]).content)
 # len(test['feed']['entry'])
 

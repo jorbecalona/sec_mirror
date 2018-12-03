@@ -21,9 +21,10 @@ sc = SparkContext(appName="ScraXBRL")
 local_files_dir = 'file:///Users/jonathanpoczatek/Documents/Code/ScraXBRL/data/mnt/disks/aux/ScraXBRL/data/*html*'
 hdfs_files_dir = 'hdfs://localhost:9000/scraxbrl/data/*'
 item_keys = ['item1', 'item1a', 'item1b', 'item2', 'item3', 'item4', 'item5', 'item6',
-            'item7', 'item7a', 'item8', 'item9', 'item9a', 'item9b', 'item10', 'item11', 'item12',
-            'item13', 'item14', 'item15']
+             'item7', 'item7a', 'item8', 'item9', 'item9a', 'item9b', 'item10', 'item11', 'item12',
+             'item13', 'item14', 'item15']
 item_keys.reverse()
+
 
 def formatHTMLItemDivs(x):
     """
@@ -43,7 +44,8 @@ def formatHTMLItemDivs(x):
         return rslt
 
     def getLinkElt(rslt):
-        rslt['link_elt'] = soup.find('a', attrs={'href': "#{}".format(rslt['target_name'])})
+        rslt['link_elt'] = soup.find(
+            'a', attrs={'href': "#{}".format(rslt['target_name'])})
         return rslt
 
     def getLinkRowElt(rslt):
@@ -83,8 +85,6 @@ def formatHTMLItemDivs(x):
     )
     return str(soup)
 
-
-from BeautifulSoup import 
     # def wrapItemSection(rslt):
     #     # Not used
     #     def end_tag_rule(start_tag_name, sib_elt):
@@ -104,7 +104,7 @@ from BeautifulSoup import
     #     elts = [i for i in itertools.takewhile(lambda x: end_tag_rule(start_tag.attrs.get('name'), x), start_tag.nextGenerator)]
     #     print(elts)
     #     itertools.take
-    #     while 
+    #     while
     #     item_div = soup.new_tag('div')
     #     item_div.attrs = {
     #         'class': 'item',
@@ -115,9 +115,6 @@ from BeautifulSoup import
     #         item_div.append(element)
     #     rslt['item_div_created'] = True
     #     return rslt
-
-    
-
 
 
 # soup.find('a', attrs={'href': "#{}".format(targets[2].get('name'))}).findParent('tr').text
@@ -148,7 +145,6 @@ from BeautifulSoup import
     #     'item_logs': item_logs,
     #     'parsed_html': str(soup)
     # }
-
 
 
 # def main():

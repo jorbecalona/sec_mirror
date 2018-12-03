@@ -24,7 +24,7 @@ xmldict['feed']['link']
 xmldict['feed']['entry'] == [['category', 'content',
                               'id', 'link', 'summary', 'title', 'updated']]
     xmldict['feed']['entry']['category'] == ['@label', '@scheme', '@term']
-    xmldict['feed']['entry']['content'] == ['@type', 'accession-nunber', 'act', 'file-number',
+    xmldict['feed']['entry']['content'] == ['@type', 'accession-number', 'act', 'file-number',
                                             'file-number-href', 'filing-date', 'filing-href', 'filing-type', 'film-number', 'form-name', 'size']
     xmldict['feed']['entry']['id'] == 'urn:tag:sec.gov,2008:accession-number=9999999997-12-008331'
     xmldict['feed']['entry']['link'] == ['@href', '@rel', '@type']
